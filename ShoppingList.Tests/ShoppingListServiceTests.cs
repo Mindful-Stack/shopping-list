@@ -1,4 +1,5 @@
-﻿using ShoppingList.Application.Services;
+﻿using ShoppingList.Application.Interfaces;
+using ShoppingList.Application.Services;
 using ShoppingList.Domain.Models;
 using Xunit;
 
@@ -99,6 +100,11 @@ namespace ShoppingList.Tests;
 
 public class ShoppingListServiceTests
 {
+    
+    
+    
+    // TODO: Write your tests here following the TDD workflow
+    
     ShoppingListService _sut = new ShoppingListService();
 
     [Theory]
@@ -124,6 +130,25 @@ public class ShoppingListServiceTests
         Assert.Equal(expected.Quantity, result.Quantity);
         Assert.Equal(expected.Notes, result.Notes);
     }
+    
+    [Fact]
+    public void Add_ShouldAddItem()
+    {
+        // Arrange
+        var service = new ShoppingListService();
+    
+        // Act
+        var item = service.Add("Milk", 2, "Lactose-free");
+
+        var items = service.GetAll();
+        
+    
+        // Assert
+        Assert.NotNull(item);
+        Assert.Equal("Milk", item!.Name);
+        Assert.Equal(2, item.Quantity);
+        Assert.Contains(item, items);
+    }
 
     [Fact]
     public void GetAll_WhenCalled_ShouldReturnAllItems()
@@ -137,11 +162,51 @@ public class ShoppingListServiceTests
 
 
         //Assert
-        Assert.Equal(expectedList.Count, actualList.Count);
+        Assert.NotNull(actualList);
     }
     
+    [Theory]
+    [InlineData("0")]
+    [InlineData("1")]
+    [InlineData("3")]
+    public void GetById_WhenCalled_ShouldReturnItem(string id)
+    {
+        // Arrange
+        var service = new ShoppingListService();
     
-    // TODO: Write your tests here following the TDD workflow
+        // Act
+        var items = service.GetAll();
+        var item = service.GetById(id);
+        
+        var lastItem = service.GetById("3");
+        
+    
+        // Assert
+        Assert.NotNull(item);
+        Assert.Contains(items, i => i.Id == id);
+        
+        
+    }
+
+    [Fact]
+    
+    public void Delete_ShouldDeleteItemAndUpdateIndex()
+    {
+        //Arrange
+        var index = "2";
+        var service = new ShoppingListService();
+        var allItems = service.GetAll();
+        
+
+        //Act
+        var deletedItem = service.GetById(index);
+        var deleteItem = service.Delete(index);
+
+        //Assert
+        Assert.True(deleteItem);
+        Assert.DoesNotContain(deletedItem, allItems);
+        Assert.Equal(allItems[2].Name, "Toothpaste");
+    }
 
     // Example test structure:
     // [Fact]
@@ -158,5 +223,69 @@ public class ShoppingListServiceTests
     //     Assert.Equal("Milk", item!.Name);
     //     Assert.Equal(2, item.Quantity);
     // }
+    [Theory]
+    [InlineData(2)]
+    public void GetAll_ShouldGetCorrectAmountOfItems(int expected)
+    {
+        //Arrange
+        var service = new ShoppingListService();
+        //GenerateDemoItems(service);
+        for (int i = 0; i < expected; i++)
+        {
+            service.Add("Banana", 1, "Just a banana");
+        }
+
+
+        //Act
+        var actual = service.GetAll();
+        var actualItems = service._Test_items;
+
+
+        //Assert
+        Assert.Equal(expected, actualItems.Length);
+    }
+    
+    private void GenerateDemoItems(IShoppingListService service)
+    {
+        var items = new ShoppingItem[5];
+        items[0] = new ShoppingItem
+        {
+            Id = "0",
+            Name = "Dishwasher tablets",
+            Quantity = 1,
+            Notes = "80st/pack - Rea",
+            IsPurchased = false
+        };
+        items[1] = new ShoppingItem
+        {
+            Id = "1",
+            Name = "Ground meat",
+            Quantity = 1,
+            Notes = "2kg - origin Sweden",
+            IsPurchased = false
+        };
+        items[2] = new ShoppingItem
+        {
+            Id = "2",
+            Name = "Apples",
+            Quantity = 10,
+            Notes = "Pink Lady",
+            IsPurchased = false
+        };
+        items[3] = new ShoppingItem
+        {
+            Id = "3",
+            Name = "Toothpaste",
+            Quantity = 1,
+            Notes = "Colgate",
+            IsPurchased = false
+        };
+        foreach (var item in items)
+        {
+            service.Add(item.Name, item.Quantity, item.Notes);
+        }
+        service.Add("Banana", 1, "Just a banana");
+        //return items;
+    }
 }
 

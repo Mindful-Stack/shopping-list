@@ -19,14 +19,16 @@ public class ShoppingListService : IShoppingListService
     public IReadOnlyList<ShoppingItem> GetAll()
     {
         // TODO: Students - Return all items from the array (up to _nextIndex)
-        
-        return GenerateDemoItems();
+        return _items;
+        //return _items.Where(item => item.Id != "").ToArray();
+        //return GenerateDemoItems();
     }
 
     public ShoppingItem? GetById(string id)
     {
         // TODO: Students - Find and return the item with the matching id
-        return null;
+        var item = _items.FirstOrDefault(i => i.Id == id);
+        return item;
     }
 
     public ShoppingItem? Add(string name, int quantity, string? notes)
@@ -34,10 +36,13 @@ public class ShoppingListService : IShoppingListService
         // TODO: Students - Implement this method
         ShoppingItem item = new ShoppingItem
         {
+            Id = _nextIndex.ToString(),
             Name = name,
             Quantity = quantity,
             Notes = notes
         };
+        _items[_nextIndex] = item;
+        _nextIndex++;
         // Return the created item
         return item;
         
@@ -53,8 +58,30 @@ public class ShoppingListService : IShoppingListService
     public bool Delete(string id)
     {
         // TODO: Students - Implement this method
-        // Return true if deleted, false if not found
+        
+        var deleteItem = _items.FirstOrDefault(i => i.Id == id);
+        if (deleteItem != null)
+        {
+            for (int i = 0; i <= _nextIndex; i++)
+            {
+                if (_items[i] == deleteItem)
+                {
+                    for (int j = i; j <= _nextIndex - 1; j++)
+                    {
+                        _items[j] = _items[j + 1];
+                    }
+                        
+                    
+                }
+            }
+            return true;
+        }
+        
         return false;
+        
+        
+        // Return true if deleted, false if not found
+        
     }
 
     public IReadOnlyList<ShoppingItem> Search(string query)
@@ -90,7 +117,7 @@ public class ShoppingListService : IShoppingListService
         var items = new ShoppingItem[5];
         items[0] = new ShoppingItem
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = "0",
             Name = "Dishwasher tablets",
             Quantity = 1,
             Notes = "80st/pack - Rea",
@@ -98,7 +125,7 @@ public class ShoppingListService : IShoppingListService
         };
         items[1] = new ShoppingItem
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = "1",
             Name = "Ground meat",
             Quantity = 1,
             Notes = "2kg - origin Sweden",
@@ -106,7 +133,7 @@ public class ShoppingListService : IShoppingListService
         };
         items[2] = new ShoppingItem
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = "2",
             Name = "Apples",
             Quantity = 10,
             Notes = "Pink Lady",
@@ -114,7 +141,7 @@ public class ShoppingListService : IShoppingListService
         };
         items[3] = new ShoppingItem
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = "3",
             Name = "Toothpaste",
             Quantity = 1,
             Notes = "Colgate",
@@ -122,4 +149,6 @@ public class ShoppingListService : IShoppingListService
         };
         return items;
     }
+
+    public ShoppingItem[] _Test_items => _items;
 }
