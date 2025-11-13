@@ -5,7 +5,7 @@ namespace ShoppingList.Application.Services;
 
 public class ShoppingListService : IShoppingListService
 {
-    private ShoppingItem[] _items;
+    private ShoppingItem[] _items = new ShoppingItem[2];
     private int _nextIndex;
 
     public ShoppingListService()
@@ -13,7 +13,7 @@ public class ShoppingListService : IShoppingListService
         // Initialize with demo data for UI demonstration
         // TODO: Students can remove or comment this out when running unit tests
         _items = GenerateDemoItems();
-        _nextIndex = 4; // We have 4 demo items initialized
+        _nextIndex = 4; // We have 4 demo items initialized 
     }
 
     public IReadOnlyList<ShoppingItem> GetAll()
@@ -30,10 +30,20 @@ public class ShoppingListService : IShoppingListService
 
     public ShoppingItem? Add(string name, int quantity, string? notes)
     {
-        // TODO: Students - Implement this method
-        // Return the created item
-        return null;
+        ShoppingItem shoppingItem = new ShoppingItem()
+        {
+            Name = name,
+            Quantity = quantity,
+            Notes = notes
+        };
+        
+        _items[_nextIndex] = shoppingItem;
+        _nextIndex++;
+        
+        return shoppingItem;
     }
+    
+    
 
     public ShoppingItem? Update(string id, string name, int quantity, string? notes)
     {
