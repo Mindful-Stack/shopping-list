@@ -244,6 +244,33 @@ public class ShoppingListServiceTests
         //Assert
         Assert.Equal(expected, actualItems.Length);
     }
+
+
+        [Theory]
+        [InlineData("app")]
+        [InlineData("to")]
+        [InlineData("dis")]
+    
+
+    public void Search_ByString_ShouldReturnCorrectItems( string search)
+    {
+        //Arrange
+        var  service = new ShoppingListService();
+        
+        var allItems = service.GetAll();
+        
+
+        //Act
+        var actual = "Appels";
+        var foundItems = service.Search(search);
+
+        //Assert
+        Assert.NotNull(foundItems);
+        
+
+    }
+    
+    
     
     private void GenerateDemoItems(IShoppingListService service)
     {
@@ -287,5 +314,6 @@ public class ShoppingListServiceTests
         service.Add("Banana", 1, "Just a banana");
         //return items;
     }
+    
 }
 

@@ -88,7 +88,24 @@ public class ShoppingListService : IShoppingListService
     {
         // TODO: Students - Implement this method
         // Return the filtered items
-        return [];
+
+        var foundItems = new ShoppingItem[5];
+        
+        foreach (var item in _items)
+        {
+            if (item.Name.Contains(query))
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    foundItems[i] = item;
+                    
+                }
+            }
+            
+        }
+        
+        
+        return foundItems;
     }
 
     public int ClearPurchased()
