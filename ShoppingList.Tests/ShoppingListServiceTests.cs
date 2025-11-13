@@ -252,7 +252,7 @@ public class ShoppingListServiceTests
         [InlineData("dis")]
     
 
-    public void Search_ByString_ShouldReturnCorrectItems( string search)
+    public void Search_ByString_ShouldReturnCorrectItems(string search)
     {
         //Arrange
         var  service = new ShoppingListService();
@@ -261,7 +261,6 @@ public class ShoppingListServiceTests
         
 
         //Act
-        var actual = "Appels";
         var foundItems = service.Search(search);
 
         //Assert

@@ -90,16 +90,17 @@ public class ShoppingListService : IShoppingListService
         // Return the filtered items
 
         var foundItems = new ShoppingItem[5];
-        
+        int j = 0;
         foreach (var item in _items)
         {
-            if (item.Name.Contains(query))
+            if (item.Name.Contains(query, StringComparison.CurrentCultureIgnoreCase))
             {
-                for (int i = 0; i < 5; i++)
-                {
-                    foundItems[i] = item;
-                    
-                }
+                foundItems[j] = item;
+                j++;
+                // for (int i = 0; i <= _items.Length; i++)
+                // {
+                //     foundItems[i] = item;
+                // }
             }
             
         }
