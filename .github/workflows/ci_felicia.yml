@@ -20,11 +20,14 @@ jobs:
       - name: Checkout 
         uses: actions/checkout@v5.0.0
 
-      - name: Show JSON file
-        run: |
-          echo "Runner context"
-          echo "${{toJson(runner)}}
-          echo "Github context"
-          echo "${{toJson(github]}}
+      - name: setup.NET
+        uses: actions/setup-donet@v5.0.0
+        with:
+          dotnet-version: ${{matrix.version}}
+
+      - name: test setup
+        if: success()
+        run: echo "test successful"
+
 
        
