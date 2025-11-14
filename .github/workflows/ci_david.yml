@@ -25,7 +25,7 @@ jobs:
           dotnet-version: ${{ matrix.version }}
 
       - name: Build Solution
-        run: dotnet build ShoppingList.sln --configuration Release
+        run: dotnet build ShoppingList.sln
 
       - name: Print matrix values
         run: |
