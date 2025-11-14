@@ -232,27 +232,27 @@ public class ShoppingListServiceTests
     
     
     // Alternativ
-    [Theory]
-    [InlineData(2)]
-    public void GetAll_ShouldGetCorrectAmountOfItems(int expected)
-    {
-        //Arrange
-        var service = new ShoppingListService();
-        //GenerateDemoItems(service);
-        for (int i = 0; i < expected; i++)
-        {
-            service.Add("Banana", 1, "Just a banana");
-        }
-
-
-        //Act
-        var actual = service.GetAll();
-        var actualItems = service._Test_items;
-
-
-        //Assert
-        Assert.Equal(expected, actualItems.Length);
-    }
+    // [Theory]
+    // [InlineData(2)]
+    // public void GetAll_ShouldGetCorrectAmountOfItems(int expected)
+    // {
+    //     //Arrange
+    //     var service = new ShoppingListService();
+    //     //GenerateDemoItems(service);
+    //     for (int i = 0; i < expected; i++)
+    //     {
+    //         service.Add("Banana", 1, "Just a banana");
+    //     }
+    //
+    //
+    //     //Act
+    //     var actual = service.GetAll();
+    //     var actualItems = service._Test_items;
+    //
+    //
+    //     //Assert
+    //     Assert.Equal(expected, actualItems.Length);
+    // }
     private void GenerateDemoItems(IShoppingListService service)
     {
         var items = new ShoppingItem[5];
