@@ -32,7 +32,8 @@ jobs:
         if: success()
         run: echo "Build successful" 
 
-     
+      - name: Test
+        run: dotnet test ShoppingList.Tests/ShoppingList.Tests.csproj --no-restore --verbosity normal
 
       - name: RunTestSuccessfully
         if: success()
