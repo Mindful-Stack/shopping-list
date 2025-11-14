@@ -33,7 +33,7 @@ jobs:
         run: echo "Build successful" 
 
       - name: Run Tests
-        run: dotnet execute /ShoppingList.Tests/ShoppingItemTests.cs
+        run: dotnet test /ShoppingList.Tests/ShoppingItemTests.cs
 
       - name: RunTestSuccessfully
         if: success()
