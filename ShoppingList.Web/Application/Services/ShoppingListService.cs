@@ -1,25 +1,25 @@
 ﻿using ShoppingList.Application.Interfaces;
+using ShoppingList.Components;
 using ShoppingList.Domain.Models;
 
 namespace ShoppingList.Application.Services;
 
 public class ShoppingListService : IShoppingListService
 {
-    private ShoppingItem[] _items;
+    private ShoppingItem[] _items = new ShoppingItem[9];
     private int _nextIndex;
 
     public ShoppingListService()
     {
         // Initialize with demo data for UI demonstration
         // TODO: Students can remove or comment this out when running unit tests
-        _items = GenerateDemoItems();
-        _nextIndex = 4; // We have 4 demo items initialized
+        // _items = GenerateDemoItems();
+        _nextIndex = 0; 
     }
 
     public IReadOnlyList<ShoppingItem> GetAll()
     {
-        // TODO: Students - Return all items from the array (up to _nextIndex)
-        return [];
+        return _items;
     }
 
     public ShoppingItem? GetById(string id)
@@ -30,10 +30,20 @@ public class ShoppingListService : IShoppingListService
 
     public ShoppingItem? Add(string name, int quantity, string? notes)
     {
-        // TODO: Students - Implement this method
-        // Return the created item
-        return null;
+        ShoppingItem shoppingItem = new ShoppingItem()
+        {
+            Name = name,
+            Quantity = quantity,
+            Notes = notes
+        };
+        
+        _items[_nextIndex] = shoppingItem;
+        _nextIndex++;
+        
+        return shoppingItem;
     }
+    
+    
 
     public ShoppingItem? Update(string id, string name, int quantity, string? notes)
     {
