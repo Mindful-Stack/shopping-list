@@ -1,8 +1,11 @@
-﻿using ShoppingList.Application.Services;
+﻿using ShoppingList.Application.Interfaces;
+using ShoppingList.Application.Services;
 using ShoppingList.Domain.Models;
 using Xunit;
 
 namespace ShoppingList.Tests;
+
+
 
 /// <summary>
 /// Unit tests for ShoppingListService.
@@ -93,24 +96,205 @@ namespace ShoppingList.Tests;
 /// - Reorder_ShouldChangeItemOrder
 /// - Reorder_WithEmptyList_ShouldReturnFalse
 /// </summary>
+///
+
 public class ShoppingListServiceTests
 {
     // TODO: Write your tests here following the TDD workflow
+    
+    ShoppingListService _sut = new ShoppingListService();
 
-    // Example test structure:
-    // [Fact]
-    // public void Add_WithValidInput_ShouldReturnItem()
+    [Theory]
+    [InlineData("Namn", 1, "Notes")]
+
+    public void Add_WithValidInput_ShouldReturnItem(string name, int quantity, string? notes)
+    {
+        //Arrange
+        var expected = _sut.Add(name, quantity, notes);
+
+        //Act
+        var result = new ShoppingItem()
+        {
+            Id = "ID",
+            Name = name,
+            Quantity = quantity,
+            Notes = notes
+        };
+
+        //Assert
+        
+        Assert.Equal(expected.Name, result.Name);
+        Assert.Equal(expected.Quantity, result.Quantity);
+        Assert.Equal(expected.Notes, result.Notes);
+    }
+    
+    [Fact]
+    public void Add_ShouldAddItem()
+    {
+        // Arrange
+        var service = new ShoppingListService();
+    
+        // Act
+        var item = service.Add("Milk", 2, "Lactose-free");
+
+        var items = service.GetAll();
+        
+    
+        // Assert
+        Assert.NotNull(item);
+        Assert.Equal("Milk", item!.Name);
+        Assert.Equal(2, item.Quantity);
+        Assert.Contains(item, items);
+    }
+
+    [Fact]
+    public void GetAll_WhenCalled_ShouldReturnAllItems()
+    {
+        //Arrange
+        var expectedList = new ShoppingListService().GetAll();
+
+        //Act
+        var actualList = _sut.GetAll();
+
+        //Assert
+        Assert.NotNull(actualList);
+    }
+    
+    [Theory]
+    [InlineData("0")]
+    [InlineData("1")]
+    [InlineData("3")]
+    public void GetById_WhenCalled_ShouldReturnItem(string id)
+    {
+        // Arrange
+        var service = new ShoppingListService();
+    
+        // Act
+        var items = service.GetAll();
+        var item = service.GetById(id);
+        
+        var lastItem = service.GetById("3");
+    
+        // Assert
+        Assert.NotNull(item);
+        Assert.Contains(items, i => i.Id == id);
+    }
+
+    [Fact]
+    
+    public void Delete_ShouldDeleteItemAndUpdateIndex()
+    {
+        //Arrange
+        var index = "2";
+        var service = new ShoppingListService();
+        var allItems = service.GetAll();
+        
+
+        //Act
+        var deletedItem = service.GetById(index);
+        var deleteItem = service.Delete(index);
+
+        //Assert
+        Assert.True(deleteItem);
+        Assert.DoesNotContain(deletedItem, allItems);
+        Assert.Equal(allItems[2].Name, "Toothpaste");
+    }
+
+
+    [Theory]
+    [InlineData("app")]
+    [InlineData("to")]
+    [InlineData("dis")]
+    //Hittas inte
+    //[InlineData("afsajfjasfjasj")]
+
+    public void Search_ByString_ShouldReturnCorrectItems(string search)
+    {
+        //Arrange
+        var service = new ShoppingListService();
+        var expected = 1;
+        // tom lista att jämföra med
+        //var expectedItems = new ShoppingItem[5];
+        
+
+        //Act
+        var foundItems = service.Search(search);
+
+        //Assert
+        Assert.True(foundItems.Count >= expected);
+        // För att testa vilka items den hittar
+        //Assert.Equal(foundItems, expectedItems);
+
+    }
+    
+    
+    
+    
+    
+    // Alternativ
+    // [Theory]
+    // [InlineData(2)]
+    // public void GetAll_ShouldGetCorrectAmountOfItems(int expected)
     // {
-    //     // Arrange
+    //     //Arrange
     //     var service = new ShoppingListService();
+    //     //GenerateDemoItems(service);
+    //     for (int i = 0; i < expected; i++)
+    //     {
+    //         service.Add("Banana", 1, "Just a banana");
+    //     }
     //
-    //     // Act
-    //     var item = service.Add("Milk", 2, "Lactose-free");
     //
-    //     // Assert
-    //     Assert.NotNull(item);
-    //     Assert.Equal("Milk", item!.Name);
-    //     Assert.Equal(2, item.Quantity);
+    //     //Act
+    //     var actual = service.GetAll();
+    //     var actualItems = service._Test_items;
+    //
+    //
+    //     //Assert
+    //     Assert.Equal(expected, actualItems.Length);
     // }
+    private void GenerateDemoItems(IShoppingListService service)
+    {
+        var items = new ShoppingItem[5];
+        items[0] = new ShoppingItem
+        {
+            Id = "0",
+            Name = "Dishwasher tablets",
+            Quantity = 1,
+            Notes = "80st/pack - Rea",
+            IsPurchased = false
+        };
+        items[1] = new ShoppingItem
+        {
+            Id = "1",
+            Name = "Ground meat",
+            Quantity = 1,
+            Notes = "2kg - origin Sweden",
+            IsPurchased = false
+        };
+        items[2] = new ShoppingItem
+        {
+            Id = "2",
+            Name = "Apples",
+            Quantity = 10,
+            Notes = "Pink Lady",
+            IsPurchased = false
+        };
+        items[3] = new ShoppingItem
+        {
+            Id = "3",
+            Name = "Toothpaste",
+            Quantity = 1,
+            Notes = "Colgate",
+            IsPurchased = false
+        };
+        foreach (var item in items)
+        {
+            service.Add(item.Name, item.Quantity, item.Notes);
+        }
+        service.Add("Banana", 1, "Just a banana");
+        //return items;
+    }
+    
 }
 
