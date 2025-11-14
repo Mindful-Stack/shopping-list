@@ -1,1 +1,39 @@
+name: Title breaker
+on:
+  push:
+    branches: main
+    
+  pull_request:
+    branches: main
+    
+  workflow_dispatch:
 
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        version: [9.0, 8.0]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        
+      - name: setup NET
+        uses: action/setup-dotnet@v5.0.0
+        with:
+          dotnet-version: ${{matrix.version}}
+
+      - name: Build Solution
+        run: dotnet build ShoppingList.sln
+
+  post-build:
+    needs: build
+    runs-on: ubunto-latest
+    steps:
+      - name: Run all the test
+        run: post build summary
+
+  
+  
