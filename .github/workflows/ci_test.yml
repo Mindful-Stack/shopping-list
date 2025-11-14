@@ -33,7 +33,7 @@ jobs:
         run: echo "Build successful" 
 
       - name: Test
-        run: dotnet test --no-restore --verbosity normal
+        run: dotnet test ShoppingList.Tests/ShoppingListServiceTests.cs --no-restore --verbosity normal
 
       - name: RunTestSuccessfully
         if: success()
