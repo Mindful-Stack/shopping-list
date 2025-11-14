@@ -1,5 +1,9 @@
-﻿using ShoppingList.Application.Services;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using ShoppingList.Application.Interfaces;
+using ShoppingList.Application.Services;
 using ShoppingList.Domain.Models;
+using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace ShoppingList.Tests;
@@ -41,16 +45,11 @@ namespace ShoppingList.Tests;
 /// - GetById_WithEmptyId_ShouldReturnNull
 ///
 /// Add() tests:
-/// - Add_WithValidInput_ShouldReturnItem
-/// - Add_ShouldGenerateUniqueId
 /// - Add_ShouldIncrementItemCount
 /// - Add_WhenArrayFull_ShouldExpandArray
 /// - Add_AfterArrayExpansion_ShouldContinueWorking
-/// - Add_ShouldSetIsPurchasedToFalse
 ///
-/// Update() tests:
-/// - Update_WithValidId_ShouldUpdateAndReturnItem
-/// - Update_WithInvalidId_ShouldReturnNull
+/// Update() tests
 /// - Update_ShouldNotChangeId
 /// - Update_ShouldNotChangeIsPurchased
 ///
@@ -98,19 +97,167 @@ public class ShoppingListServiceTests
     // TODO: Write your tests here following the TDD workflow
 
     // Example test structure:
-    // [Fact]
-    // public void Add_WithValidInput_ShouldReturnItem()
-    // {
-    //     // Arrange
-    //     var service = new ShoppingListService();
-    //
-    //     // Act
-    //     var item = service.Add("Milk", 2, "Lactose-free");
-    //
-    //     // Assert
-    //     Assert.NotNull(item);
-    //     Assert.Equal("Milk", item!.Name);
-    //     Assert.Equal(2, item.Quantity);
-    // }
+    [Fact]
+    public void Add_WithValidInput_ShouldReturnItem()
+    {
+        // Arrange
+        var service = new ShoppingListService();
+        // Act
+        var item = service.Add("Milk", 2, "Lactose-free");
+        // Assert
+        Assert.NotNull(item);
+        Assert.Equal("Milk", item!.Name);
+        Assert.Equal(2, item.Quantity);
+    }
+
+    [Fact]
+    public void Add_ShouldGenerateUniqueId()
+    {
+        // Arrange
+        var service = new ShoppingListService();
+        var items = new ShoppingItem[3];
+        items[0] = service.Add("Bread", 1, "Whole grain");
+        items[1] = service.Add("Eggs", 12, "Free range");
+        items[2] = service.Add("Milk", 2, "Lactose-free");
+
+        // Act
+        var newItem = service.Add("Butter", 1, "Unsalted");
+
+        // Assert
+        Assert.DoesNotContain(items, item => item.Id == newItem.Id);
+    }
+
+    [Fact]
+    public void Add_ShouldSetIsPurchasedToFalse()
+    {
+        // Arrange
+        var service = new ShoppingListService();
+        // Act
+        var item = service.Add("Cheese", 1, "Cheddar");
+        // Assert
+        Assert.False(item.IsPurchased);
+
+    }
+
+    [Fact]
+    public void Add_ShouldIncrementItemCount()
+    {
+        // Arrange
+        var service = new ShoppingListService();
+        int initialCount = service.GetAll().Count;
+
+
+        // Act
+        service.Add("Yogurt", 3, "Greek");
+
+
+        // Assert
+        Assert.Equal(initialCount , service.GetAll().Count);
+        //Assert.Equal(initialCount, service.GetAll().Count);
+    }
+
+
+
+
+    //private void AddTestData(IShoppingListService service)
+    //{
+    //    service.Add("Bread", 1, "Whole grain");
+    //    service.Add("Eggs", 12, "Free range");
+    //    service.Add("Milk", 2, "Lactose-free");
+    //    service.Add("Butter", 1, "Unsalted");
+    //    service.Add("Cheese", 1, "Cheddar");
+    //}
+
+
+
+
+
+    [Theory]
+    [InlineData("Apple", 10, null)]
+    [InlineData("Bananas", 5, "Riped and ready to eat")]
+    [InlineData("Cucumber", 2, "Bent to perfection")]
+
+    public void Update_ShouldIncrementItemCount(string expectedName, int expectedQuantity, string? expectedNote)
+    {
+        // Arrange
+        var service = new ShoppingListService();
+        var ShoppingItem = service.GetAll();
+
+
+        // Act
+        service.Update(ShoppingItem[0].Id, expectedName, expectedQuantity, expectedNote);
+
+        // Assert
+        Assert.Equal(expectedName, ShoppingItem[0].Name);
+        Assert.Equal(expectedQuantity, ShoppingItem[0].Quantity);
+        Assert.Equal(expectedNote, ShoppingItem[0].Notes);
+
+    }
+
+    [Theory]
+    [InlineData("", 10, null)]
+    [InlineData(null, 5, "Riped and ready to eat")]
+    public void Update_ShouldThrowArgumentException(string newName, int newQuantity, string? newNote)
+    {
+        // Arrange
+        var service = new ShoppingListService();
+        var ShoppingItem = service.GetAll();
+
+
+        // Act
+
+        // Assert
+        Assert.Throws<ArgumentException>(() => service.Update(ShoppingItem[0].Id, newName, newQuantity, newNote));
+
+    }
+
+
+    [Theory]
+    [InlineData("Köttbullar", -10, null)]
+    [InlineData("KanelBUllar", -5, "Riped and ready to eat")]
+    public void Update_ShouldThrowException(string newName, int newQuantity, string? newNote)
+    {
+        // Arrange
+        var service = new ShoppingListService();
+        var ShoppingItem = service.GetAll();
+
+
+        // Act
+
+        // Assert
+        Assert.Throws<Exception>(() => service.Update(ShoppingItem[0].Id, newName, newQuantity, newNote));
+
+    }
+
+    /// - Add_ShouldGenerateUniqueId
+    /// - Add_WhenArrayFull_ShouldExpandArray
+    /// - Add_AfterArrayExpansion_ShouldContinueWorking
+    /// - Add_ShouldSetIsPurchasedToFalse
+
+    [Fact]
+    public void Get_All_ShouldReturnAllItems()
+    {
+        // Arrange
+        var service = new ShoppingListService();
+
+        // Act
+        var items = service.GetAll();
+
+        // Assert
+        Assert.NotEmpty(items);
+    }
+
+    /// - GetAll_WithItems_ShouldReturnAllItems
+    //[Fact]
+    //public void GetAll_WithItems_ShouldReturnAllItems()
+    //{
+    //    // Arrange
+    //    var service = new ShoppingListService();
+    //    AddTestData(service);
+    //    // Act
+    //    var items = service.GetAll();
+    //    // Assert
+    //    Assert.Equal(5, items.Count);
+    //}
 }
 

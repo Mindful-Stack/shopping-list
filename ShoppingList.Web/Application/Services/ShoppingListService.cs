@@ -1,5 +1,6 @@
 ﻿using ShoppingList.Application.Interfaces;
 using ShoppingList.Domain.Models;
+using System.Linq.Expressions;
 
 namespace ShoppingList.Application.Services;
 
@@ -12,13 +13,18 @@ public class ShoppingListService : IShoppingListService
     {
         // Initialize with demo data for UI demonstration
         // TODO: Students can remove or comment this out when running unit tests
-        _items = GenerateDemoItems();
+        _items = GenerateDemoItems(); // databas
         _nextIndex = 4; // We have 4 demo items initialized
     }
 
     public IReadOnlyList<ShoppingItem> GetAll()
     {
         // TODO: Students - Return all items from the array (up to _nextIndex)
+        if(_items.Length > 0)
+        {
+            return _items;
+        }
+
         return [];
     }
 
@@ -32,13 +38,52 @@ public class ShoppingListService : IShoppingListService
     {
         // TODO: Students - Implement this method
         // Return the created item
-        return null;
+        var newItem = new ShoppingItem
+        {
+            Name = name,
+            Quantity = quantity,
+            Notes = notes
+        };
+
+        if (newItem == null)
+        {
+            throw new Exception("Item invalid");
+        }
+
+        for(int i = 0; i < _items.Length; i++)
+        {
+            if(_items[i] == null)
+            {
+                _items[i] = newItem;
+                return newItem;
+            }
+        }
+        return newItem;
     }
 
     public ShoppingItem? Update(string id, string name, int quantity, string? notes)
     {
         // TODO: Students - Implement this method
         // Return the updated item, or null if not found
+        if(string.IsNullOrEmpty(name))
+        {
+            throw new ArgumentException("Name invalid, cant be empty");
+        }
+        if(quantity < 0)
+        {
+            throw new Exception("Quantity invalid, must be greater than zero");
+        }
+        var items = _items;
+        var itemToUpdate = items.Where(p => p.Id == id).FirstOrDefault();
+
+        if (itemToUpdate != null)
+        {
+            itemToUpdate.Name = name;
+            itemToUpdate.Quantity = quantity;
+            itemToUpdate.Notes = notes;
+            return itemToUpdate;
+        }
+
         return null;
     }
 
@@ -114,4 +159,6 @@ public class ShoppingListService : IShoppingListService
         };
         return items;
     }
+
+
 }
