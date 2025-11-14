@@ -1,0 +1,45 @@
+name: Pipeline for Shopping List
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        version: [9.0, 8.0]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5.0.0
+        with:
+          dotnet-version: ${{ matrix.version }}
+
+      - name: Build project
+        run: dotnet build
+
+      - name: Test project
+        run: dotnet test
+
+      - name: Print matrix values
+        run: |
+          echo "🔧 Running on OS: ${{ matrix.os }}"
+          echo "🖥️ Using .NET version: ${{ matrix.version }}"
+          echo "📦 Repository: ${{ github.repository }}"
+          echo "📂 Worfklow: ${{ github.workflow }}"
+          echo "🚀 Triggered by: ${{ github.event_name }}"
+          echo "🥷 Actor: ${{ github.actor }}"
+          echo "🔢 Run number: ${{ github.run_number }}"
+          echo "🌿 Branch: ${{ github.ref }}"
