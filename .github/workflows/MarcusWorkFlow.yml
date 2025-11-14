@@ -29,12 +29,6 @@ jobs:
       - name: Build Test
         run: dotnet web
 
-  post-build:
-    needs: build
-    runs-on: ubunto-latest
-    steps:
-      - name: Run all the test
-        run: post build summary
 
   
   
