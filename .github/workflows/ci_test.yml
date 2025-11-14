@@ -1,17 +1,24 @@
-name: Workflow
+name: WorkflowTest
   
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 jobs:
-  runworkflow:
-    runs-on: $ {{ matrix.os }}
+  build:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
         version: [9.0, 8.0]
+    
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup .Net
         uses: actions/setup-dotnet@v5
@@ -21,12 +28,22 @@ jobs:
       - name: Build Solution
         run: dotnet build ShoppingList.sln
 
+      - name: BuildSuccess
+        if: success()
+        run: echo "Build successful" 
+
+      - name: Test
+        run: dotnet test ShoppingList.Tests/ShoppingList.Tests.csproj --no-restore --verbosity normal
+
+      - name: RunTestSuccessfully
+        if: success()
+        run: echo "Tests ran successfully" 
+
       - name: Print matrix values
         run: |
           echo "Running on OS: ${{ matrix.os }}"
           echo "Using .NET version: ${{ matrix.version }}"
           
-      - name: TestBuildSuccess
-        if: success()
-        run: echo "Build successful" 
-  
+      
+          
+      
