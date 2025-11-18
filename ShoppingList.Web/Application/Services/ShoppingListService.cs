@@ -31,8 +31,15 @@ public class ShoppingListService : IShoppingListService
     public ShoppingItem? Add(string name, int quantity, string? notes)
     {
         // TODO: Students - Implement this method
+        ShoppingItem item = new ShoppingItem
+        {
+            Name = name,
+            Quantity = quantity,
+            Notes = notes
+        };
         // Return the created item
-        return null;
+        return item;
+        
     }
 
     public ShoppingItem? Update(string id, string name, int quantity, string? notes)

@@ -4,6 +4,8 @@ using Xunit;
 
 namespace ShoppingList.Tests;
 
+
+
 /// <summary>
 /// Unit tests for ShoppingListService.
 ///
@@ -93,8 +95,36 @@ namespace ShoppingList.Tests;
 /// - Reorder_ShouldChangeItemOrder
 /// - Reorder_WithEmptyList_ShouldReturnFalse
 /// </summary>
+///
+
 public class ShoppingListServiceTests
 {
+    ShoppingListService _sut = new ShoppingListService();
+
+    [Theory]
+    [InlineData("Namn", 1, "Notes")]
+
+    public void Add_WithValidInput_ShouldReturnItem(string name, int quantity, string? notes)
+    {
+        //Arrange
+        var expected = _sut.Add(name, quantity, notes);
+
+        //Act
+        var result = new ShoppingItem()
+        {
+            Name = name,
+            Quantity = quantity,
+            Notes = notes
+        };
+
+        //Assert
+        Assert.Equal(expected, result);
+        Assert.Equal(expected.Name, result.Name);
+        Assert.Equal(expected.Quantity, result.Quantity);
+        Assert.Equal(expected.Notes, result.Notes);
+    }
+    
+    
     // TODO: Write your tests here following the TDD workflow
 
     // Example test structure:
